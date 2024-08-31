@@ -2,16 +2,14 @@ package se.magnus.microservices.composite.product.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import src.main.java.se.magnus.api.compose.product.*;
-import src.main.java.se.magnus.api.core.product.Product;
-import src.main.java.se.magnus.api.core.product.ProductService;
-import src.main.java.se.magnus.api.core.recommendation.Recommendation;
-import src.main.java.se.magnus.api.core.review.Review;
-import src.main.java.se.magnus.api.core.review.ReviewService;
-import src.main.java.se.magnus.util.http.ServiceUtil;
+import se.magnus.api.compose.product.*;
+import se.magnus.util.http.ServiceUtil;
+import se.magnus.api.core.product.Product;
+import se.magnus.api.core.recommendation.Recommendation;
+import se.magnus.api.core.review.Review;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 public class ProductCompositeServiceImpl implements ProductComposeService {

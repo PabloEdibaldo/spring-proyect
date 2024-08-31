@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import src.main.java.se.magnus.api.core.product.Product;
-import src.main.java.se.magnus.api.core.product.ProductService;
-import src.main.java.se.magnus.api.exceptions.InvalidInputException;
-import src.main.java.se.magnus.api.exceptions.NotFoundException;
-import src.main.java.se.magnus.util.http.ServiceUtil;
+import se.magnus.api.core.product.Product;
+import se.magnus.api.core.product.ProductService;
+import se.magnus.api.core.recommendation.Recommendation;
+import se.magnus.api.exceptions.InvalidInputException;
+import se.magnus.api.exceptions.NotFoundException;
+import se.magnus.util.http.ServiceUtil;
+
+import java.util.List;
 
 @RestController
 public class ProductServiceImpl implements ProductService {
@@ -33,6 +36,11 @@ public class ProductServiceImpl implements ProductService {
             throw  new NotFoundException("No product found for productId"+ productId);
         }
         return new Product(productId,"name-"+productId,123,serviceUtil.getServiceAddress());
+    }
+
+    @Override
+    public List<Recommendation> getRecommendations(int productId) {
+        return List.of();
     }
 
 }

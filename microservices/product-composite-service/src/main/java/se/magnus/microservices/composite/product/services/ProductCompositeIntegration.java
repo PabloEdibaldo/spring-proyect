@@ -8,20 +8,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import src.main.java.se.magnus.api.core.product.Product;
-import src.main.java.se.magnus.api.core.product.ProductService;
-import src.main.java.se.magnus.api.core.recommendation.Recommendation;
-import src.main.java.se.magnus.api.core.recommendation.RecommendationService;
-import src.main.java.se.magnus.api.core.review.Review;
-import src.main.java.se.magnus.api.core.review.ReviewService;
+import se.magnus.api.core.product.Product;
+import se.magnus.api.core.product.ProductService;
+import se.magnus.api.core.recommendation.Recommendation;
+import se.magnus.api.core.recommendation.RecommendationService;
+import se.magnus.api.core.review.Review;
+import se.magnus.api.core.review.ReviewService;
 import org.slf4j.Logger;
-import src.main.java.se.magnus.api.exceptions.InvalidInputException;
-import src.main.java.se.magnus.api.exceptions.NotFoundException;
-import src.main.java.se.magnus.util.http.HttpErrorInfo;
+import se.magnus.api.exceptions.InvalidInputException;
+import se.magnus.api.exceptions.NotFoundException;
+import se.magnus.util.http.HttpErrorInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpMethod.GET;
 
@@ -66,7 +67,7 @@ public class ProductCompositeIntegration implements  ProductService,ReviewServic
             return product;
 
         }catch (HttpClientErrorException e){
-            switch (HttpStatus.resolve(e.getStatusCode().value())){
+            switch (Objects.requireNonNull(HttpStatus.resolve(e.getStatusCode().value()))){
                 case NOT_FOUND -> {throw new NotFoundException(getErrorMessage(e));}
                 case UNPROCESSABLE_ENTITY -> { throw new InvalidInputException(getErrorMessage(e));}
                 default -> {
@@ -123,6 +124,7 @@ public class ProductCompositeIntegration implements  ProductService,ReviewServic
                             null,
                             new ParameterizedTypeReference<List<Review>>() {}
                     ).getBody();
+            assert reviews != null;
             LOG.debug("Found {} reviews for a product with id: {}",reviews.size(),productId);
             return reviews;
         }catch (Exception e){
@@ -130,7 +132,6 @@ public class ProductCompositeIntegration implements  ProductService,ReviewServic
             return new ArrayList<>();
         }
     }
-
 
 
 }
