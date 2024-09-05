@@ -14,5 +14,4 @@ public interface ProductService {
     )
     Product getProduct(@PathVariable int productId);
 
-    List<Recommendation> getRecommendations(int productId);
 }

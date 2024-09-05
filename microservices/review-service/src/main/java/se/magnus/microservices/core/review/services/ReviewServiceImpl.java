@@ -29,7 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Review> getReviews(int productId) {
         if(productId<1){
-            throw new InvalidInputException("Invalid productId"+ productId);
+            throw new InvalidInputException("Invalid productId: "+ productId);
         }
 
         if(productId == 213){

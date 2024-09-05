@@ -29,18 +29,14 @@ public class ProductServiceImpl implements ProductService {
         LOG.debug("product return the found product for productId={}",productId);
 
         if(productId<1){
-            throw  new InvalidInputException("Invalid productId:"+productId);
+            throw  new InvalidInputException("Invalid productId: "+productId);
         }
 
         if(productId == 13){
-            throw  new NotFoundException("No product found for productId"+ productId);
+            throw  new NotFoundException("No product found for productId: "+ productId);
         }
         return new Product(productId,"name-"+productId,123,serviceUtil.getServiceAddress());
     }
 
-    @Override
-    public List<Recommendation> getRecommendations(int productId) {
-        return List.of();
-    }
 
 }
