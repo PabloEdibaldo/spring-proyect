@@ -3,6 +3,7 @@ package se.magnus.microservices.composite.product.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import se.magnus.api.compose.product.*;
+import se.magnus.api.exceptions.NotFoundException;
 import se.magnus.util.http.ServiceUtil;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.recommendation.Recommendation;
@@ -13,8 +14,9 @@ import java.util.List;
 
 @RestController
 public class ProductCompositeServiceImpl implements ProductComposeService {
+
     private final ServiceUtil serviceUtil;
-    private ProductCompositeIntegration integration;
+    private final ProductCompositeIntegration integration;
 
     @Autowired
     public ProductCompositeServiceImpl(
@@ -30,10 +32,15 @@ public class ProductCompositeServiceImpl implements ProductComposeService {
     @Override
     public ProductAggregate getProduct(int productId) {
         Product product = integration.getProduct(productId);
-        List<Recommendation> recommendations= integration.getRecommendations(productId);
+
+        if (product==null){
+            throw new NotFoundException("No product found for productId"+productId);
+        }
+        List<Recommendation> recommendations = integration.getRecommendations(productId);
+
         List<Review> reviews = integration.getReviews(productId);
 
-        return  createProductAggregate(product,recommendations,reviews,serviceUtil.getServiceAddress());
+        return createProductAggregate(product,recommendations,reviews,serviceUtil.getServiceAddress());
     }
 
     private ProductAggregate createProductAggregate(
