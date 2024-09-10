@@ -9,7 +9,7 @@ public class ProductAggregate {
     private final int weight;
     private final List<RecommendationSummary> recommendations;
     private final List<ReviewSummary> reviews;
-    private final ServiceAddress serviceAddress;
+    private final ServiceAddresses serviceAddresses;
 
     public ProductAggregate(
             int productId,
@@ -17,17 +17,17 @@ public class ProductAggregate {
             int weight,
             List<RecommendationSummary> recommendations,
             List<ReviewSummary> reviews,
-            ServiceAddress serviceAddress) {
+            ServiceAddresses serviceAddresses) {
         this.productId = productId;
         this.name = name;
         this.weight = weight;
         this.recommendations = recommendations;
         this.reviews = reviews;
-        this.serviceAddress = serviceAddress;
+        this.serviceAddresses = serviceAddresses;
     }
 
-    public ServiceAddress getServiceAddress() {
-        return serviceAddress;
+    public ServiceAddresses getServiceAddress() {
+        return serviceAddresses;
     }
 
     public List<ReviewSummary> getReviews() {

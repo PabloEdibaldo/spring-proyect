@@ -1,46 +1,44 @@
 package se.magnus.microservices.composite.product.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import se.magnus.api.compose.product.*;
-import se.magnus.api.exceptions.NotFoundException;
-import se.magnus.util.http.ServiceUtil;
+
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
-
-import java.util.List;
-
+import se.magnus.api.exceptions.NotFoundException;
+import se.magnus.util.http.ServiceUtil;
 
 @RestController
-public class ProductCompositeServiceImpl implements ProductComposeService {
+public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     private final ServiceUtil serviceUtil;
-    private final ProductCompositeIntegration integration;
+    private ProductCompositeIntegration integration;
 
     @Autowired
     public ProductCompositeServiceImpl(
-            ServiceUtil serviceUtil,
-            ProductCompositeIntegration integration
-    ){
+            ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
+
         this.serviceUtil = serviceUtil;
         this.integration = integration;
     }
 
-
-
     @Override
     public ProductAggregate getProduct(int productId) {
-        Product product = integration.getProduct(productId);
 
-        if (product==null){
-            throw new NotFoundException("No product found for productId"+productId);
+        Product product = integration.getProduct(productId);
+        if (product == null) {
+            throw new NotFoundException("No product found for productId: " + productId);
         }
+
         List<Recommendation> recommendations = integration.getRecommendations(productId);
 
         List<Review> reviews = integration.getReviews(productId);
 
-        return createProductAggregate(product,recommendations,reviews,serviceUtil.getServiceAddress());
+        return createProductAggregate(product, recommendations, reviews, serviceUtil.getServiceAddress());
     }
 
     private ProductAggregate createProductAggregate(
@@ -49,48 +47,29 @@ public class ProductCompositeServiceImpl implements ProductComposeService {
             List<Review> reviews,
             String serviceAddress) {
 
-        //Setup product info
+        // 1. Setup product info
         int productId = product.getProductId();
         String name = product.getName();
         int weight = product.getWeight();
 
-        //Copy summary recommendations info, if available
-        List<RecommendationSummary> recommendationSummaries=(recommendations == null)?null:recommendations.stream()
-                .map(
-                        r -> new RecommendationSummary(
-                                r.getRecommendationId(),
-                                r.getAuthor(),
-                                r.getRate()
-                        )
-                ).toList();
+        // 2. Copy summary recommendation info, if available
+        List<RecommendationSummary> recommendationSummaries =
+                (recommendations == null) ? null : recommendations.stream()
+                        .map(r -> new RecommendationSummary(r.getRecommendationId(), r.getAuthor(), r.getRate()))
+                        .collect(Collectors.toList());
 
-        //copy summary review info, if available
-        List<ReviewSummary> reviewSummaries = (reviews==null)?null:reviews.stream()
-                .map(r->new ReviewSummary(
-                        r.getReviewId(),
-                        r.getAuthor(),
-                        r.getSubject()
-                )).toList();
+        // 3. Copy summary review info, if available
+        List<ReviewSummary> reviewSummaries =
+                (reviews == null) ? null : reviews.stream()
+                        .map(r -> new ReviewSummary(r.getReviewId(), r.getAuthor(), r.getSubject()))
+                        .collect(Collectors.toList());
 
-        //create info regarding the invoice microservices address
-
+        // 4. Create info regarding the involved microservices addresses
         String productAddress = product.getServiceAddress();
-        String reviewAddress = (reviews !=null && !reviews.isEmpty())
-                ? reviews.get(0).getServiceAddress()
-                : "";
-        String recommendationAddress = (recommendations != null && recommendations.isEmpty())
-                ?recommendations.get(0).getServiceAddress()
-                :"";
-        ServiceAddress serviceAddress1 = new ServiceAddress(serviceAddress,productAddress,reviewAddress,recommendationAddress);
+        String reviewAddress = (reviews != null && reviews.size() > 0) ? reviews.get(0).getServiceAddress() : "";
+        String recommendationAddress = (recommendations != null && recommendations.size() > 0) ? recommendations.get(0).getServiceAddress() : "";
+        ServiceAddresses serviceAddresses = new ServiceAddresses(serviceAddress, productAddress, reviewAddress, recommendationAddress);
 
-        return new ProductAggregate(
-                productId,
-                name,
-                weight,
-                recommendationSummaries,
-                reviewSummaries,
-                serviceAddress1);
+        return new ProductAggregate(productId, name, weight, recommendationSummaries, reviewSummaries, serviceAddresses);
     }
-
-
 }

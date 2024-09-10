@@ -1,20 +1,20 @@
 package se.magnus.api.compose.product;
 
-public class ServiceAddress {
+public class ServiceAddresses {
 
     private final String cmp;
     private final String pro;
     private final String rev;
     private final String rec;
 
-    public ServiceAddress(){
+    public ServiceAddresses(){
         cmp = null;
         pro = null;
         rev = null;
         rec = null;
     }
 
-    public ServiceAddress(
+    public ServiceAddresses(
             String compositeAddress,
             String productAddress,
             String reviewAddress,
